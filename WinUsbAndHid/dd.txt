@@ -1,0 +1,100 @@
+//MSG LOOP LEFTOUT:
+if (msg == WM_DEVICECHANGE) {
+
+		
+		UINT devices;
+		if (GetRawInputDeviceList(NULL,&devices,sizeof(RAWINPUTDEVICELIST)) !=0) {
+			MessageBox(hwnd, L"Cant get number of devices", L"Fetch Error", MB_ICONSTOP);
+		}
+
+		RAWINPUTDEVICELIST* devicelist = new RAWINPUTDEVICELIST[devices];
+
+		if (GetRawInputDeviceList(devicelist, &devices, sizeof(RAWINPUTDEVICELIST)) == -1) {
+			MessageBox(hwnd, L"Cant get device list", L"Fetch Error", MB_ICONSTOP);
+			delete[] devicelist;
+		}
+		std::wstring x;
+		for (int i = 0; i < devices; i++) {
+			RAWINPUTDEVICELIST d = devicelist[i];
+			
+			//WCHAR name[256];
+			UINT size;
+			GetRawInputDeviceInfo(d.hDevice, RIDI_DEVICENAME, NULL, &size);
+				WCHAR* deviceName = new WCHAR[size];
+			if (!GetRawInputDeviceInfoW(d.hDevice, RIDI_DEVICENAME, deviceName, &size)) {
+				MessageBoxW(hwnd, L"Can't get Device name", L"Device Data", MB_ICONWARNING);
+			}
+			if (d.dwType = 0) {
+				wchar_t t[] = L"mouse: ";
+				x.append(t);
+			}
+			if (d.dwType = 1) {
+				wchar_t t[] = L"keyboard: ";
+				x.append(t);
+			}
+			x.append(deviceName);
+			wchar_t w = '\n';
+			x.append(&w);
+		}
+		HWND y = GetDlgItem(hwnd, 4);
+		
+		SetWindowTextW(y, x.c_str());
+	}
+
+	if (msg == WM_INPUT) {
+		UINT devices;
+		if (GetRawInputDeviceList(NULL, &devices, sizeof(RAWINPUTDEVICELIST)) != 0) {
+			MessageBox(hwnd, L"Cant get number of devices", L"Fetch Error", MB_ICONSTOP);
+		}
+
+		RAWINPUTDEVICELIST* devicelist = new RAWINPUTDEVICELIST[devices];
+
+		if (GetRawInputDeviceList(devicelist, &devices, sizeof(RAWINPUTDEVICELIST)) == -1) {
+			MessageBox(hwnd, L"Cant get device list", L"Fetch Error", MB_ICONSTOP);
+			delete[] devicelist;
+		}
+		std::wstring x;
+		for (int i =0; i < devices; i++) {
+			RAWINPUTDEVICELIST d = devicelist[i];
+
+			//WCHAR name[256];
+			UINT size;
+			GetRawInputDeviceInfo(d.hDevice, RIDI_DEVICENAME, NULL, &size);
+			WCHAR* deviceName = new WCHAR[size];
+			if (!GetRawInputDeviceInfoW(d.hDevice, RIDI_DEVICENAME, deviceName, &size)) {
+				MessageBoxW(hwnd, L"Can't get Device name", L"Device Data", MB_ICONWARNING);
+			}
+			if (d.dwType = 0) {
+				wchar_t t[] = L"mouse: ";
+				x.append(t);
+			}
+			if (d.dwType = 1) {
+				wchar_t t[] = L"keyboard: ";
+				x.append(t);
+			}
+			x.append(deviceName);
+			wchar_t w = '\n';
+			x.append(&w);
+		}
+		HWND y = GetDlgItem(hwnd, 4);
+
+		SetWindowTextW(y, x.c_str());
+	}
+
+
+
+//Setup API:
+	HDEVINFO hDevInfo = SetupDiGetClassDevsW(NULL, deviceName, NULL, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
+						WCHAR friendlyName[256];
+						if (hDevInfo != INVALID_HANDLE_VALUE) {
+							SP_DEVINFO_DATA devInfoData;
+							devInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
+							
+							if (SetupDiEnumDeviceInfo(hDevInfo, 0, &devInfoData)) {
+								
+								if (SetupDiGetDeviceRegistryPropertyW(hDevInfo, &devInfoData, SPDRP_FRIENDLYNAME, NULL, (PBYTE)friendlyName, sizeof(friendlyName), NULL) == FALSE) {
+									// Now you have the friendly name of the device
+									MessageBox(hwnd, L"cant get freindly name", L"Plug and play error", MB_ICONERROR);
+								}
+							}
+							SetupDiDestroyDeviceInfoList(hDevInfo);
